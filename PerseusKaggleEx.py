@@ -1,9 +1,6 @@
 
 # coding: utf-8
 
-# In[1]:
-
-
 import requests
 import pandas as pd
 import sys
@@ -39,9 +36,6 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 
 
 # # Helper functions for visualization:
-
-# In[2]:
-
 
 # from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
@@ -119,9 +113,6 @@ def plot_model_history(history, n_epochs):
     ax[1].set_ylabel('Accuracy')
 
 
-# In[3]:
-
-
 df0 = pd.read_fwf('PCC_cat.txt', header=None)
 # df0
 # df0[21] # 21 is the label entry index
@@ -129,18 +120,13 @@ df0 = pd.read_fwf('PCC_cat.txt', header=None)
 
 # # Here we have 7 unique labels:
 
-# In[4]:
-
 
 labels = np.unique(df0[21])
 
-
 # # Make a dataframe of the images and associated labels
 
-# In[5]:
 
-
-# access ra and dec from their columns in the datagframe
+# access ra and dec from their columns in the dataframe
 ra = df0[2]
 dec = df0[3]
 
@@ -153,8 +139,6 @@ dec = df0[3]
 #                     'labels': df0[21]})    
 
 
-# In[6]:
-
 
 bright = np.where(df0[4] <= 19.4)
 brightDF = df0.iloc[bright].copy()
@@ -163,9 +147,6 @@ labels = np.unique(brightDF[21])
 
 
 # # Check balance of labels/data
-
-# In[7]:
-
 
 def checkBalance(df):
     all_labels = df['labels']
@@ -176,10 +157,7 @@ def checkBalance(df):
         print(f'{balance[i]*100/df.size:.2f} %')
 
 
-# In[8]:
-
-
-# access ra and dec from their columns in the datagframe
+# access ra and dec from their columns in the dataframe
 ra = brightDF[2]
 dec = brightDF[3]
 
@@ -192,23 +170,9 @@ brightDF_reduced = pd.DataFrame({'files' : filenames,
                                  'labels': brightDF[21]})    
 
 
-# In[9]:
-
-
 # checkBalance(brightDF_reduced)
-
-
-# In[10]:
-
-
 df1 = brightDF_reduced
 unique_labels = np.unique(df1['labels'])
-
-# unique_labels
-
-
-# In[11]:
-
 
 clusterBG_LTG = df1.loc[(df1['labels']==unique_labels[0])]
 BG_ETG = df1.loc[(df1['labels']==unique_labels[1])]
@@ -217,10 +181,6 @@ likely_dE_ETGcluster = df1.loc[(df1['labels']==unique_labels[3])]
 likely_merging = df1.loc[(df1['labels']==unique_labels[4])]
 poss_dE_ETGcluster = df1.loc[(df1['labels']==unique_labels[5])]
 weak_bg = df1.loc[(df1['labels']==unique_labels[6])]
-
-
-# In[12]:
-
 
 downSampleDf0 = pd.concat([clusterBG_LTG, # 384
                          BG_ETG.sample(frac = 400/3008),
@@ -232,19 +192,10 @@ downSampleDf0 = pd.concat([clusterBG_LTG, # 384
                          ])
 # checkBalance(downSampleDf0)
 
-
-# ![image.png](attachment:image.png)
-
-# In[13]:
-
-
 def replace(df, ind):
     label = list(df['labels'])[0]
     newDf = df.replace(label, str(ind))
     return(newDf)
-
-
-# In[14]:
 
 
 # combined 3 and 5
@@ -273,50 +224,49 @@ downSampleDf1 = pd.concat([first.sample(frac = lenSecond/lenFirst), second])
 
 # In[15]:
 
+def applyRotations(originalDf, outDir):
 
-file = downSampleDf1['files'].to_numpy()
-label = downSampleDf1['labels'].to_numpy()
-originalDir = 'SDSS1/'
-#rotDir = 'rotations'
-rotDir = 'rotations01'
-# originalDir = 'image256/'
-# rotDir = 'rotations256'
+	#files = downSampleDf1['files'].to_numpy()
+	#label = downSampleDf1['labels'].to_numpy()
+	files = originalDf['files'].to_numpy()
+	label = originalDf['labels'].to_numpy()
+	#rotDir = 'rotations'
+	rotDir = 'rotations01'
+	# originalDir = 'image256/'
+	# rotDir = 'rotations256'
 
-rotFilenames = list()
-rotLabels = list()
+	rotFilenames = list()
+	rotLabels = list()
 
-#angle = [90, 180, 270, 360]
-angle = [30, 45, 60, 90, 120, 135, 150, 180, 210, 235, 240, 270, 300, 315, 330, 360]
+	#angle = [90, 180, 270, 360]
+	angle = [30, 45, 60, 90, 120, 135, 150, 180, 210, 235, 240, 270, 300, 315, 330, 360]
 
-for ang in angle:
-    for f, l in zip(file, label):
-        imgString = originalDir + f
+	for ang in angle:
+	    for f, l in zip(files, label):
+		imgString = originalDir + f
 
-        im = PIL.Image.open(imgString)
+		im = PIL.Image.open(imgString)
 
-        out = im.rotate(ang)
-        
-        # generated filename
-        outString = f'{rotDir}/{f[:-5]}_rot{ang}_label={l}.jpeg'
-        
-        # filename relative to working directory
-        dfString = f'{f[:-5]}_rot{ang}_label={l}.jpeg'
-        
-        out.save(outString)
-        rotFilenames.append(dfString)
-        rotLabels.append(l)
+		out = im.rotate(ang)
+		
+		# generated filename
+		outString = f'{rotDir}/{f[:-5]}_rot{ang}_label={l}.jpeg'
+		
+		# filename relative to working directory
+		dfString = f'{f[:-5]}_rot{ang}_label={l}.jpeg'
+		
+		out.save(outString)
+		rotFilenames.append(dfString)
+		rotLabels.append(l)
 
-rotationDf = pd.DataFrame({'files': rotFilenames ,
-                         'labels': rotLabels})
-# rotationDf
-# checkBalance(rotationDf)
+	rotationDf = pd.DataFrame({'files': rotFilenames ,
+				 'labels': rotLabels})
+	# rotationDf
+	# checkBalance(rotationDf)
 
 
 # # Train/Test Split
 # 
-
-# In[16]:
-
 
 X = rotationDf['files']
 y = rotationDf['labels']
@@ -327,12 +277,10 @@ trainDf = pd.DataFrame({'files' : X_train,
 testDf = pd.DataFrame({'files' : X_test,
                         'labels': y_test}) 
 
-trainDf #randomized and split
+#trainDf #randomized and split
 
 
 # # Create datasets with flow from dataframe
-
-# In[17]:
 
 
 IMG_WIDTH = 200
