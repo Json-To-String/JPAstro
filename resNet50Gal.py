@@ -40,7 +40,7 @@ from tensorflow.keras.callbacks import ReduceLROnPlateau, EarlyStopping
 # from sklearn.metrics import confusion_matrix
 from sklearn.utils.multiclass import unique_labels
 
-def plot_confusion_matrix(y_true, y_pred, 
+def plot_confusion_matrix(y_true, y_pred,
                           normalize=False,
                           title=None,
                           cmap=plt.cm.Blues):
@@ -76,8 +76,8 @@ def plot_confusion_matrix(y_true, y_pred,
              rotation_mode="anchor")
 
     #fixes "squishing of plot"
-    plt.ylim([1.5, -.5]) 
-    
+    plt.ylim([1.5, -.5])
+
     # Loop over data dimensions and create text annotations.
     fmt = '.2f' if normalize else 'd'
     thresh = cm.max() / 2.
@@ -96,7 +96,7 @@ def plot_model_history(history, n_epochs):
     val_loss = history.history['val_loss']
     acc = history.history['accuracy']
     val_acc = history.history['val_accuracy']
-    
+
     fig, ax = plt.subplots(nrows=1,ncols=2, figsize=(10,5))
     ax[0].plot(np.arange(n_epochs), loss, label='Training Loss')
     ax[0].plot(np.arange(n_epochs), val_loss, label='Validation Loss')
@@ -136,7 +136,7 @@ dec = df0[3]
 #     filenames.append(fn)
 
 # df1 = pd.DataFrame({'files' : filenames,
-#                     'labels': df0[21]})    
+#                     'labels': df0[21]})
 
 
 
@@ -167,7 +167,7 @@ for r, d in zip(ra, dec):
     filenames.append(fn)
 
 brightDF_reduced = pd.DataFrame({'files' : filenames,
-                                 'labels': brightDF[21]})    
+                                 'labels': brightDF[21]})
 
 
 # checkBalance(brightDF_reduced)
@@ -207,7 +207,7 @@ second = pd.concat([
 first = pd.concat([replace(clusterBG_LTG, 0), # old 0
                    replace(BG_ETG, 0), # old 1
                    replace(clusterBG_edgeDisk, 0), # old 2
-                   replace(weak_bg, 0) # old 6 
+                   replace(weak_bg, 0) # old 6
                     ])
 
 lenSecond = len(second.index)
@@ -222,7 +222,7 @@ downSampleDf1 = pd.concat([first.sample(frac = lenSecond/lenFirst), second])
 # # Generate Rotation data
 
 def applyRotations(originalDf, outDir):
-	
+
 	# files and labels as numpy arrays
 	files = originalDf['files'].to_numpy()
 	label = originalDf['labels'].to_numpy()
@@ -236,7 +236,7 @@ def applyRotations(originalDf, outDir):
 
 	#angle = [90, 180, 270, 360]
 	angle = [30, 45, 60, 90, 120, 135, 150, 180, 210, 235, 240, 270, 300, 315, 330, 360]
-		
+
 	# Use PIL to rotate image on angles in list
 	for ang in angle:
 		for f, l in zip(files, label):
@@ -244,10 +244,10 @@ def applyRotations(originalDf, outDir):
 			im = PIL.Image.open(imgString)
 			out = im.rotate(ang)
 			# generated filename
-			outString = f'{rotDir}/{outDir}/{f[:-5]}_rot{ang}_label={l}.jpeg'
+			outString = f'{rotDir}/{outDir}/{f[:-5]}_rot{ang}_label={l}.png'
 			# filename relative to working directory
-			dfString = f'{outDir}/{f[:-5]}_rot{ang}_label={l}.jpeg'
-				
+			dfString = f'{outDir}/{f[:-5]}_rot{ang}_label={l}.png'
+
 			out.save(outString)
 			rotFilenames.append(dfString)
 			rotLabels.append(l)
@@ -264,9 +264,9 @@ y = downSampleDf1['labels']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42)
 
 trainDf = pd.DataFrame({'files' : X_train,
-                        'labels': y_train})  
+                        'labels': y_train})
 testDf = pd.DataFrame({'files' : X_test,
-                        'labels': y_test}) 
+                        'labels': y_test})
 
 trainDf_rot = applyRotations(trainDf, 'train')
 testDf_rot = applyRotations(testDf, 'test')
@@ -288,7 +288,7 @@ directory=imgDirectory,
 x_col="files",
 y_col="labels",
 subset="training",
-batch_size=TRAIN_BATCH_SIZE, # divisibility 
+batch_size=TRAIN_BATCH_SIZE, # divisibility
 seed=42,
 shuffle=True,
 class_mode="categorical",
@@ -320,17 +320,17 @@ target_size=(IMG_WIDTH,IMG_HEIGHT))
 
 
 # # ResNet50 Model
-# 
+#
 # https://github.com/suvoooo/Learn-TensorFlow/blob/master/resnet/Implement_Resnet_TensorFlow.ipynb
 
 # In[18]:
 
 
 def res_identity(x, filters):
-    x_skip = x # this will be used for addition with the residual block 
+    x_skip = x # this will be used for addition with the residual block
     f1, f2 = filters
 
-    #first block 
+    #first block
     x = Conv2D(f1, kernel_size=(1, 1), strides=(1, 1), padding='valid', kernel_regularizer=l2(0.001))(x)
     x = BatchNormalization()(x)
     x = Activation(activations.relu)(x)
@@ -345,12 +345,12 @@ def res_identity(x, filters):
     x = BatchNormalization()(x)
     # x = Activation(activations.relu)(x)
 
-    # add the input 
+    # add the input
     x = Add()([x, x_skip])
     x = Activation(activations.relu)(x)
 
     return x
-     
+
 
 
 # In[19]:
@@ -376,24 +376,23 @@ def res_conv(x, s, filters):
     x = Conv2D(f2, kernel_size=(1, 1), strides=(1, 1), padding='valid', kernel_regularizer=l2(0.001))(x)
     x = BatchNormalization()(x)
 
-    # shortcut 
+    # shortcut
     x_skip = Conv2D(f2, kernel_size=(1, 1), strides=(s, s), padding='valid', kernel_regularizer=l2(0.001))(x_skip)
     x_skip = BatchNormalization()(x_skip)
 
-    # add 
+    # add
     x = Add()([x, x_skip])
     x = Activation(activations.relu)(x)
 
     return x
 
-
 # In[20]:
 
 
 
-#### Necessary Imports for Neural Net 
+#### Necessary Imports for Neural Net
 
-from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, ZeroPadding2D,     Flatten, BatchNormalization, AveragePooling2D, Dense, Activation, Add 
+from tensorflow.keras.layers import Input, Conv2D, MaxPooling2D, ZeroPadding2D,     Flatten, BatchNormalization, AveragePooling2D, Dense, Activation, Add
 from tensorflow.keras.models import Model
 from tensorflow.keras import activations
 from tensorflow.keras.optimizers import Adam
@@ -413,7 +412,7 @@ def resnet50():
     x = Activation(activations.relu)(x)
     x = MaxPooling2D((3, 3), strides=(2, 2))(x)
 
-    #2nd stage 
+    #2nd stage
     # frm here on only conv block and identity block, no pooling
 
     x = res_conv(x, s=1, filters=(64, 256))
@@ -449,7 +448,7 @@ def resnet50():
     x = Flatten()(x)
     x = Dense(2, activation='softmax', kernel_initializer='he_normal')(x) #multi-class
 
-    # define the model 
+    # define the model
 
     model = Model(inputs=input_im, outputs=x, name='Resnet50')
 
@@ -489,13 +488,13 @@ def resnet50():
 #     return(lr)
 # step_schedule = tf.keras.callbacks.LearningRateScheduler(step_schedule) # learning rate decay
 
-        
+
 # def earlystop(mode):
 #     if mode=='acc':
 #         estop = tf.keras.callbacks.EarlyStopping(monitor='val_acc', patience=15, mode='max')
 #     elif mode=='loss':
 #         estop = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=15, mode='min')
-#     return estop    
+#     return estop
 
 
 # ![image-2.png](attachment:image-2.png)
@@ -515,7 +514,7 @@ cnn_model = resnet50()
 
 
 # #### **a. Reduce Learning Rate on Plateau**
-# 
+#
 # Is used to reduce the learning rate when a metric has stopped improving.
 
 # In[24]:
@@ -537,8 +536,8 @@ cnn_model = resnet50()
 # In[26]:
 
 
-# cnn_model.compile(loss='categorical_crossentropy', 
-#                   optimizer=Adam(learning_rate=1e-3), 
+# cnn_model.compile(loss='categorical_crossentropy',
+#                   optimizer=Adam(learning_rate=1e-3),
 #                   metrics=['accuracy'])
 # lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
 #                     initial_learning_rate=1e-2,
@@ -556,13 +555,13 @@ lr_schedule = tf.keras.optimizers.schedules.ExponentialDecay(
                     decay_rate=decay_rate)
 
 
-cnn_model.compile(loss='categorical_crossentropy', 
-                  optimizer = tf.keras.optimizers.SGD(learning_rate=lr_schedule), 
+cnn_model.compile(loss='categorical_crossentropy',
+                  optimizer = tf.keras.optimizers.SGD(learning_rate=lr_schedule),
                   metrics=['accuracy'])
 
 es = tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=True)
 
-history = cnn_model.fit(train_generator, 
+history = cnn_model.fit(train_generator,
                         epochs=n_epochs,
                         callbacks = [es],
 			verbose = 0,
@@ -646,7 +645,7 @@ predictions = cnn_model.predict(test_generator)
 #         predicted_label = unique_labels[np.argmax(predictions[idx])]
 #         ax[i, j].set_title(f"{predicted_label}", fontsize=10)
 #         ax[i, j].imshow(test_generator[idx][0])
-        
+
 #         ax[i, j].axis("off")
 #         idx += 1
 
@@ -675,7 +674,7 @@ def get_key(val):
     for key, value in unique_labels.items():
         if val == value:
             return key
- 
+
     return "key doesn't exist"
 
 Y_true = []
