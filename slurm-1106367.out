@@ -1,0 +1,141 @@
+2023-10-10 13:16:11.503966: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+2023-10-10 13:25:55.491449: I tensorflow/compiler/jit/xla_cpu_device.cc:41] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2023-10-10 13:25:55.564459: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcuda.so.1
+2023-10-10 13:26:12.313992: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1720] Found device 0 with properties: 
+pciBusID: 0000:05:00.0 name: Tesla K40m computeCapability: 3.5
+coreClock: 0.745GHz coreCount: 15 deviceMemorySize: 11.17GiB deviceMemoryBandwidth: 268.58GiB/s
+2023-10-10 13:26:12.321812: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1720] Found device 1 with properties: 
+pciBusID: 0000:81:00.0 name: Tesla K40m computeCapability: 3.5
+coreClock: 0.745GHz coreCount: 15 deviceMemorySize: 11.17GiB deviceMemoryBandwidth: 268.58GiB/s
+2023-10-10 13:26:12.322028: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+2023-10-10 13:26:12.654267: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublas.so.10
+2023-10-10 13:26:12.654738: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublasLt.so.10
+2023-10-10 13:26:12.835542: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcufft.so.10
+2023-10-10 13:26:13.048910: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcurand.so.10
+2023-10-10 13:26:13.318533: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusolver.so.10
+2023-10-10 13:26:13.494348: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusparse.so.10
+2023-10-10 13:26:13.715510: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudnn.so.7
+2023-10-10 13:26:13.742640: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1862] Adding visible gpu devices: 0, 1
+2023-10-10 13:26:13.745060: I tensorflow/core/platform/cpu_feature_guard.cc:142] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following CPU instructions in performance-critical operations:  SSE4.1 SSE4.2 AVX AVX2 FMA
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-10-10 13:26:13.749178: I tensorflow/compiler/jit/xla_gpu_device.cc:99] Not creating XLA devices, tf_xla_enable_xla_devices not set
+2023-10-10 13:26:14.420248: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1720] Found device 0 with properties: 
+pciBusID: 0000:05:00.0 name: Tesla K40m computeCapability: 3.5
+coreClock: 0.745GHz coreCount: 15 deviceMemorySize: 11.17GiB deviceMemoryBandwidth: 268.58GiB/s
+2023-10-10 13:26:14.427246: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1720] Found device 1 with properties: 
+pciBusID: 0000:81:00.0 name: Tesla K40m computeCapability: 3.5
+coreClock: 0.745GHz coreCount: 15 deviceMemorySize: 11.17GiB deviceMemoryBandwidth: 268.58GiB/s
+2023-10-10 13:26:14.427536: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+2023-10-10 13:26:14.427790: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublas.so.10
+2023-10-10 13:26:14.427966: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublasLt.so.10
+2023-10-10 13:26:14.428132: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcufft.so.10
+2023-10-10 13:26:14.428303: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcurand.so.10
+2023-10-10 13:26:14.428521: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusolver.so.10
+2023-10-10 13:26:14.428764: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcusparse.so.10
+2023-10-10 13:26:14.428969: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudnn.so.7
+2023-10-10 13:26:14.454675: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1862] Adding visible gpu devices: 0, 1
+2023-10-10 13:26:14.454943: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudart.so.10.1
+2023-10-10 13:26:24.430358: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1261] Device interconnect StreamExecutor with strength 1 edge matrix:
+2023-10-10 13:26:24.430618: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1267]      0 1 
+2023-10-10 13:26:24.430747: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1280] 0:   N N 
+2023-10-10 13:26:24.430825: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1280] 1:   N N 
+2023-10-10 13:26:24.460201: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1406] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 10617 MB memory) -> physical GPU (device: 0, name: Tesla K40m, pci bus id: 0000:05:00.0, compute capability: 3.5)
+2023-10-10 13:26:24.475555: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1406] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:1 with 10617 MB memory) -> physical GPU (device: 1, name: Tesla K40m, pci bus id: 0000:81:00.0, compute capability: 3.5)
+2023-10-10 13:26:35.410199: I tensorflow/compiler/mlir/mlir_graph_optimization_pass.cc:116] None of the MLIR optimization passes are enabled (registered 2)
+2023-10-10 13:26:35.415405: I tensorflow/core/platform/profile_utils/cpu_utils.cc:112] CPU Frequency: 2394435000 Hz
+2023-10-10 13:27:23.832785: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcublas.so.10
+2023-10-10 13:27:25.428307: I tensorflow/stream_executor/platform/default/dso_loader.cc:49] Successfully opened dynamic library libcudnn.so.7
+Found 2052 validated image filenames belonging to 2 classes.
+Found 684 validated image filenames belonging to 2 classes.
+Found 928 validated image filenames.
+ 1/35 [..............................] - ETA: 31s - loss: 0.1864 - accuracy: 1.0000 2/35 [>.............................] - ETA: 13s - loss: 0.3308 - accuracy: 0.9750 3/35 [=>............................] - ETA: 13s - loss: 0.3412 - accuracy: 0.9667 4/35 [==>...........................] - ETA: 12s - loss: 0.3524 - accuracy: 0.9625 5/35 [===>..........................] - ETA: 12s - loss: 0.3352 - accuracy: 0.9600 6/35 [====>.........................] - ETA: 11s - loss: 0.3190 - accuracy: 0.9583 7/35 [=====>........................] - ETA: 11s - loss: 0.3035 - accuracy: 0.9643 8/35 [=====>........................] - ETA: 10s - loss: 0.3521 - accuracy: 0.9625 9/35 [======>.......................] - ETA: 10s - loss: 0.3414 - accuracy: 0.961110/35 [=======>......................] - ETA: 10s - loss: 0.3869 - accuracy: 0.960011/35 [========>.....................] - ETA: 9s - loss: 0.3689 - accuracy: 0.9636 12/35 [=========>....................] - ETA: 9s - loss: 0.3823 - accuracy: 0.962513/35 [==========>...................] - ETA: 8s - loss: 0.3658 - accuracy: 0.965414/35 [===========>..................] - ETA: 8s - loss: 0.3560 - accuracy: 0.964315/35 [===========>..................] - ETA: 8s - loss: 0.3444 - accuracy: 0.966716/35 [============>.................] - ETA: 7s - loss: 0.3421 - accuracy: 0.962517/35 [=============>................] - ETA: 7s - loss: 0.3463 - accuracy: 0.958818/35 [==============>...............] - ETA: 6s - loss: 0.3449 - accuracy: 0.958319/35 [===============>..............] - ETA: 6s - loss: 0.3604 - accuracy: 0.955320/35 [================>.............] - ETA: 6s - loss: 0.3510 - accuracy: 0.957521/35 [=================>............] - ETA: 5s - loss: 0.3551 - accuracy: 0.957122/35 [=================>............] - ETA: 5s - loss: 0.3542 - accuracy: 0.954523/35 [==================>...........] - ETA: 4s - loss: 0.3461 - accuracy: 0.956524/35 [===================>..........] - ETA: 4s - loss: 0.3453 - accuracy: 0.954225/35 [====================>.........] - ETA: 3s - loss: 0.3386 - accuracy: 0.956026/35 [=====================>........] - ETA: 3s - loss: 0.3322 - accuracy: 0.957727/35 [======================>.......] - ETA: 3s - loss: 0.3268 - accuracy: 0.959328/35 [=======================>......] - ETA: 2s - loss: 0.3449 - accuracy: 0.953629/35 [=======================>......] - ETA: 2s - loss: 0.3398 - accuracy: 0.955230/35 [========================>.....] - ETA: 1s - loss: 0.3341 - accuracy: 0.956731/35 [=========================>....] - ETA: 1s - loss: 0.3338 - accuracy: 0.954832/35 [==========================>...] - ETA: 1s - loss: 0.3340 - accuracy: 0.954733/35 [===========================>..] - ETA: 0s - loss: 0.3293 - accuracy: 0.956134/35 [============================>.] - ETA: 0s - loss: 0.3307 - accuracy: 0.954435/35 [==============================] - ETA: 0s - loss: 0.3301 - accuracy: 0.954735/35 [==============================] - 14s 387ms/step - loss: 0.3301 - accuracy: 0.9547
+/home/jpruitt/JPAstro/perseusResNet50.py:809: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
+  ax = plt.subplot(n_filters, 3, ix)
+/home/jpruitt/JPAstro/perseusResNet50.py:860: MatplotlibDeprecationWarning: Auto-removal of overlapping axes is deprecated since 3.6 and will be removed two minor releases later; explicitly call ax.remove() as needed.
+  ax = plt.subplot(square, square, ix)
+Init conds:
+init lr: 0.075, decay rate: 0.99, decay steps: 100000
+Test Loss:     0.33008748292922974
+Test Accuracy: 0.9546783566474915
+conv2d (7, 7, 3, 64) (None, 100, 100, 64)
+conv2d_1 (1, 1, 64, 64) (None, 49, 49, 64)
+conv2d_2 (3, 3, 64, 64) (None, 49, 49, 64)
+conv2d_3 (1, 1, 64, 256) (None, 49, 49, 256)
+conv2d_4 (1, 1, 64, 256) (None, 49, 49, 256)
+conv2d_5 (1, 1, 256, 64) (None, 49, 49, 64)
+conv2d_6 (3, 3, 64, 64) (None, 49, 49, 64)
+conv2d_7 (1, 1, 64, 256) (None, 49, 49, 256)
+conv2d_8 (1, 1, 256, 64) (None, 49, 49, 64)
+conv2d_9 (3, 3, 64, 64) (None, 49, 49, 64)
+conv2d_10 (1, 1, 64, 256) (None, 49, 49, 256)
+conv2d_11 (1, 1, 256, 128) (None, 25, 25, 128)
+conv2d_12 (3, 3, 128, 128) (None, 25, 25, 128)
+conv2d_13 (1, 1, 128, 512) (None, 25, 25, 512)
+conv2d_14 (1, 1, 256, 512) (None, 25, 25, 512)
+conv2d_15 (1, 1, 512, 128) (None, 25, 25, 128)
+conv2d_16 (3, 3, 128, 128) (None, 25, 25, 128)
+conv2d_17 (1, 1, 128, 512) (None, 25, 25, 512)
+conv2d_18 (1, 1, 512, 128) (None, 25, 25, 128)
+conv2d_19 (3, 3, 128, 128) (None, 25, 25, 128)
+conv2d_20 (1, 1, 128, 512) (None, 25, 25, 512)
+conv2d_21 (1, 1, 512, 128) (None, 25, 25, 128)
+conv2d_22 (3, 3, 128, 128) (None, 25, 25, 128)
+conv2d_23 (1, 1, 128, 512) (None, 25, 25, 512)
+conv2d_24 (1, 1, 512, 256) (None, 13, 13, 256)
+conv2d_25 (3, 3, 256, 256) (None, 13, 13, 256)
+conv2d_26 (1, 1, 256, 1024) (None, 13, 13, 1024)
+conv2d_27 (1, 1, 512, 1024) (None, 13, 13, 1024)
+conv2d_28 (1, 1, 1024, 256) (None, 13, 13, 256)
+conv2d_29 (3, 3, 256, 256) (None, 13, 13, 256)
+conv2d_30 (1, 1, 256, 1024) (None, 13, 13, 1024)
+conv2d_31 (1, 1, 1024, 256) (None, 13, 13, 256)
+conv2d_32 (3, 3, 256, 256) (None, 13, 13, 256)
+conv2d_33 (1, 1, 256, 1024) (None, 13, 13, 1024)
+conv2d_34 (1, 1, 1024, 256) (None, 13, 13, 256)
+conv2d_35 (3, 3, 256, 256) (None, 13, 13, 256)
+conv2d_36 (1, 1, 256, 1024) (None, 13, 13, 1024)
+conv2d_37 (1, 1, 1024, 256) (None, 13, 13, 256)
+conv2d_38 (3, 3, 256, 256) (None, 13, 13, 256)
+conv2d_39 (1, 1, 256, 1024) (None, 13, 13, 1024)
+conv2d_40 (1, 1, 1024, 256) (None, 13, 13, 256)
+conv2d_41 (3, 3, 256, 256) (None, 13, 13, 256)
+conv2d_42 (1, 1, 256, 1024) (None, 13, 13, 1024)
+conv2d_43 (1, 1, 1024, 512) (None, 7, 7, 512)
+conv2d_44 (3, 3, 512, 512) (None, 7, 7, 512)
+conv2d_45 (1, 1, 512, 2048) (None, 7, 7, 2048)
+conv2d_46 (1, 1, 1024, 2048) (None, 7, 7, 2048)
+conv2d_47 (1, 1, 2048, 512) (None, 7, 7, 512)
+conv2d_48 (3, 3, 512, 512) (None, 7, 7, 512)
+conv2d_49 (1, 1, 512, 2048) (None, 7, 7, 2048)
+conv2d_50 (1, 1, 2048, 512) (None, 7, 7, 512)
+conv2d_51 (3, 3, 512, 512) (None, 7, 7, 512)
+conv2d_52 (1, 1, 512, 2048) (None, 7, 7, 2048)
+Model: "model"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+input_1 (InputLayer)         [(None, 200, 200, 3)]     0         
+_________________________________________________________________
+zero_padding2d (ZeroPadding2 (None, 206, 206, 3)       0         
+_________________________________________________________________
+conv2d (Conv2D)              (None, 100, 100, 64)      9472      
+_________________________________________________________________
+batch_normalization (BatchNo (None, 100, 100, 64)      256       
+_________________________________________________________________
+activation (Activation)      (None, 100, 100, 64)      0         
+_________________________________________________________________
+max_pooling2d (MaxPooling2D) (None, 49, 49, 64)        0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 49, 49, 64)        4160      
+_________________________________________________________________
+batch_normalization_1 (Batch (None, 49, 49, 64)        256       
+_________________________________________________________________
+activation_1 (Activation)    (None, 49, 49, 64)        0         
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 49, 49, 64)        36928     
+=================================================================
+Total params: 51,072
+Trainable params: 50,816
+Non-trainable params: 256
+_________________________________________________________________
+rotations-png/test/sdss_ra=49.9635_dec=41.535_rot30_label=1.png
