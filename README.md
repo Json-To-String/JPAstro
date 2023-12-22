@@ -13,5 +13,6 @@
 * Train/test split yields good results, but now we wish to move further out from the center of the PCC where Wittmann et al considered, so we use SDSS SQL queries to obtain more data.
 * Use SQL to define selection regions in the Red Sequence and radially outward from the center of the cluster. We notice that stars appear here, even though their photometric flag suggests they are galaxies.
 	* Currently trying to find if there are [flags](https://live-sdss4org-dr16.pantheonsite.io/algorithms/flags_detail/) that appear for stars and not galaxies but this is proving difficult
+ 	* One attempt was to look at the Spectroscopic redshift (z) of the object to discriminate between stars and galaxies' flags but their flags seem mixed
 
 
