@@ -1,4 +1,6 @@
 # Current working summary of project:
+(Writeup/Masters Project Report will be included in the repo soon)
+(Presentation will be added as well)
 
 * Take 5437 objects from [Wittmann et al.](https://iopscience.iop.org/article/10.3847/1538-4365/ab4998) 
 * 7 distinct classes from paper - grouped into 2 / binary classification
