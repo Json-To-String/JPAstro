@@ -19,3 +19,4 @@
 * Ignoring the presence of galaxies classified as stars, adding new data based off of Spectroscopic Redshift to the training set helped bolster model performance against independent new data.
 * Confirmed that adding these new objects did in fact yield good results with an independent testset, searching 90 arcmins radially outward from the center of the Perseus Cluster, and subtracting out common objects with training data.
 
+* Current steps are to ensure project is reproducable, will include requirements.txt and build steps
