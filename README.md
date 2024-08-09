@@ -21,6 +21,8 @@
 
 * Current steps are to ensure project is reproducable, will include requirements.txt and build steps
 * Below is the proposed file-tree:
+
+```
 * JPAstro/ (New name may be needed)
 ├── README.md
 ├── LICENSE
@@ -66,3 +68,4 @@
 └── config/
     ├── config.yaml
     └── hyperparameters.json
+```
