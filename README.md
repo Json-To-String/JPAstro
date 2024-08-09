@@ -20,3 +20,49 @@
 * Confirmed that adding these new objects did in fact yield good results with an independent testset, searching 90 arcmins radially outward from the center of the Perseus Cluster, and subtracting out common objects with training data.
 
 * Current steps are to ensure project is reproducable, will include requirements.txt and build steps
+* Below is the proposed file-tree:
+* JPAstro/ (New name may be needed)
+├── README.md
+├── LICENSE
+├── .gitignore
+├── requirements.txt
+├── data/
+│   ├── raw/
+│   │   ├── galaxy_images/
+│   │   │   ├── cluster_1/
+│   │   │   │   ├── galaxy_1.png
+│   │   │   │   ├── galaxy_2.png
+│   │   │   └── ...
+│   │   ├── cluster_2/
+│   │   └── ...
+│   └── processed/
+│       ├── train/
+│       ├── val/
+│       └── test/
+├── notebooks/
+│   ├── 01_Data_Preprocessing.ipynb
+│   ├── 02_Exploratory_Data_Analysis.ipynb
+│   ├── 03_Model_Training.ipynb
+│   ├── 04_Model_Evaluation.ipynb
+│   └── 05_Transfer_Learning_ResNet50.ipynb
+├── scripts/
+│   ├── data_preprocessing.py
+│   ├── train_model.py
+│   ├── evaluate_model.py
+│   └── utils.py
+├── models/
+│   ├── resnet50_pretrained.h5
+│   ├── resnet50_finetuned.h5
+│   └── model_architecture.py
+├── results/
+│   ├── training_logs/
+│   │   ├── log_01.txt
+│   │   └── log_02.txt
+│   ├── model_predictions/
+│   └── evaluation_metrics/
+│       ├── confusion_matrix.png
+│       ├── accuracy_report.txt
+│       └── ...
+└── config/
+    ├── config.yaml
+    └── hyperparameters.json
