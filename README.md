@@ -21,7 +21,7 @@
 
 * Current steps are to ensure project is reproducable, will include requirements.txt and build steps
 ```
-* JPAstro/ (New name may be needed)
+* JPAstro/ (New name may be needed. Below are the most important files in each directory)
 ├── README.md
 ├── .gitignore
 ├── requirements.txt
