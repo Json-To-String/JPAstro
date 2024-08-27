@@ -20,3 +20,30 @@
 * Confirmed that adding these new objects did in fact yield good results with an independent testset, searching 90 arcmins radially outward from the center of the Perseus Cluster, and subtracting out common objects with training data.
 
 * Current steps are to ensure project is reproducable, will include requirements.txt and build steps
+```
+* JPAstro/ (New name may be needed)
+├── README.md
+├── .gitignore
+├── requirements.txt
+├── Images/
+│   ├── SDSS-png/ (initial 5437 images from Wittmann et al.)
+│   ├── rotations-png/ (augmented data to train/test on)
+│   │   ├── train/
+│   │   ├── test/
+│   └── WriteUpFigs/
+├── Models/
+├── Notebooks/
+│   ├── perseusResNet50.ipynb (main notebook/driver)
+│   ├── post-training.ipynb 
+│   ├── Resnet Model Testing.ipynb
+│   ├── flagChecking.ipynb
+│   ├── Populate Dataset.ipynb
+│   └── brightPairPlots.ipynb
+├── Python/
+│   ├── perseusResNet50.py
+│   └── populateDataset.ipynb
+└── SQL/
+    ├── pcc_crossmatchQuery.txt
+    └── radialSearchNoColor.txt
+ 
+```
