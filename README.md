@@ -28,7 +28,27 @@
 ├── LICENSE
 ├── .gitignore
 ├── requirements.txt
-├── data/
+├── Images/
+│   ├── SDSS-png/ (initial 5437 images from Wittmann et al.)
+│   ├── rotations-png/ (augmented data to train/test on)
+│   │   ├── train/
+│   │   ├── test/
+│   └── WriteUpFigs/
+├── Models/
+├── Notebooks/
+│   ├── perseusResNet50.ipynb (main notebook/driver)
+│   ├── post-training.ipynb 
+│   ├── Resnet Model Testing.ipynb
+│   ├── flagChecking.ipynb
+│   ├── Populate Dataset.ipynb
+│   └── brightPairPlots.ipynb
+├── Python/
+│   ├── perseusResNet50.py
+│   └── populateDataset.ipynb
+└── SQL/
+    ├── pcc_crossmatchQuery.txt
+    └── radialSearchNoColor.txt
+├── *data/
 │   ├── raw/
 │   │   ├── galaxy_images/
 │   │   │   ├── cluster_1/
@@ -41,12 +61,6 @@
 │       ├── train/
 │       ├── val/
 │       └── test/
-├── notebooks/
-│   ├── 01_Data_Preprocessing.ipynb
-│   ├── 02_Exploratory_Data_Analysis.ipynb
-│   ├── 03_Model_Training.ipynb
-│   ├── 04_Model_Evaluation.ipynb
-│   └── 05_Transfer_Learning_ResNet50.ipynb
 ├── scripts/
 │   ├── data_preprocessing.py
 │   ├── train_model.py
