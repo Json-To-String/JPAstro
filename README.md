@@ -24,7 +24,7 @@
 * Was recommended to explore k-fold cross validation for another check of model robustness
 
 ```
-* JPAstro/ (New name may be needed. Below are the most important files in each directory)
+JPAstro/ (New name may be needed. Below are the most important files in each directory)
 ├── README.md
 ├── .gitignore
 ├── requirements.txt
@@ -48,5 +48,38 @@
 └── SQL/
     ├── pcc_crossmatchQuery.txt
     └── radialSearchNoColor.txt
- 
+├── *data/
+│   ├── raw/
+│   │   ├── galaxy_images/
+│   │   │   ├── cluster_1/
+│   │   │   │   ├── galaxy_1.png
+│   │   │   │   ├── galaxy_2.png
+│   │   │   └── ...
+│   │   ├── cluster_2/
+│   │   └── ...
+│   └── processed/
+│       ├── train/
+│       ├── val/
+│       └── test/
+├── scripts/
+│   ├── data_preprocessing.py
+│   ├── train_model.py
+│   ├── evaluate_model.py
+│   └── utils.py
+├── models/
+│   ├── resnet50_pretrained.h5
+│   ├── resnet50_finetuned.h5
+│   └── model_architecture.py
+├── results/
+│   ├── training_logs/
+│   │   ├── log_01.txt
+│   │   └── log_02.txt
+│   ├── model_predictions/
+│   └── evaluation_metrics/
+│       ├── confusion_matrix.png
+│       ├── accuracy_report.txt
+│       └── ...
+└── config/
+    ├── config.yaml
+    └── hyperparameters.json
 ```
