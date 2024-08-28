@@ -26,6 +26,14 @@
 * JPAstro/ (New name may be needed)
 ├── README.md
 ├── LICENSE
+
+(8/27/24)
+* Current steps are to ensure project is reproducable, will include requirements.txt and build steps. Restructuring to implement better practices and formats.
+* Was recommended to explore k-fold cross validation for another check of model robustness
+
+```
+* JPAstro/ (New name may be needed. Below are the most important files in each directory)
+├── README.md
 ├── .gitignore
 ├── requirements.txt
 ├── Images/
