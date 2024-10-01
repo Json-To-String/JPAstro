@@ -48,6 +48,8 @@ JPAstro/ (New name may be needed. Below are the most important files in each dir
 └── SQL/
     ├── pcc_crossmatchQuery.txt
     └── radialSearchNoColor.txt
+
+*************idea************
 ├── *data/
 │   ├── raw/
 │   │   ├── galaxy_images/
