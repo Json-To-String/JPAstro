@@ -1,4 +1,4 @@
-name: tensorflow_gpu
+name: tf_gpu_astro
 channels:
   - conda-forge
   - defaults
@@ -195,6 +195,8 @@ dependencies:
   - zipp=3.8.0=pyhd8ed1ab_0
   - zlib=1.2.11=h8ffe710_1014
   - zstd=1.5.2=h6255e5f_1
+  - opencv
+  - seaborn
   - pip:
     - joblib==1.1.0
     - pandas==1.5.0

@@ -1,0 +1,3 @@
+[submodule "SciScript-Python"]
+	path = SciScript-Python
+	url = https://github.com/sciserver/SciScript-Python.git
