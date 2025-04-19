@@ -85,3 +85,9 @@ JPAstro/ (New name may be needed. Below are the most important files in each dir
     ├── config.yaml
     └── hyperparameters.json
 ```
+# Installation
+## Method 1 Tensorflow on GPU via conda
+1. Install anaconda 
+2. `conda update -n base -c defaults conda`
+3. `conda env create -f tensorflow_gpu_modified.yaml`
+4. `conda activate tf_gpu_astro`
