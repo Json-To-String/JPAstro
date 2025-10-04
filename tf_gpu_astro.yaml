@@ -1,0 +1,15 @@
+name: tf_gpu_astro
+channels:
+  - conda-forge
+  - nvidia
+  - defaults
+dependencies:
+  - cuda-toolkit=12.6.0
+  - tensorflow
+  - opencv
+  - pandas
+  - matplotlib
+  - seaborn
+  - scikit-learn
+  - scikit-image
+  - ipykernel
