@@ -173,6 +173,7 @@ cython_debug/
 
 # Local Files / Generated 
 Images/rotations-png/*
+Images/rotations-png/
 Images/SDSS0/
 Images/SDSS1/
 Images/SDSS400/
