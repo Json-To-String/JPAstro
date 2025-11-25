@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "JPAstro"
+version = "0.1.0"
+description = "Galaxy Classification via Convolutional Neural Network"
+readme = "README.md"
+requires-python = ">=3.12"
+license = "MIT"
+license-files = ["LICENSE.txt"]
+authors = [ { name = "Jason Pruitt" } ]
+
+dependencies = [
+    "opencv-python",
+    "pandas",
+    "matplotlib",
+    "seaborn",
+    "scikit-learn",
+    "scikit-image",
+    "ipykernel",
+    "ruff>=0.13.3",
+    "pillow>=11.3.0",
+    "numpy>=2.0.2",
+    "pyesasky>=2.0.4",
+]
+
+[project.optional-dependencies]
+pytorch = [
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "torchaudio>=2.1.0",
+    "torchmetrics",
+    "tensorboard>=2.14.1",
+]
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+torchvision = [
+  { index = "pytorch-cu128", marker = "sys_platform == 'linux' or sys_platform == 'win32'" },
+]
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+dynamic = []
+
+[project.urls]
+"Repository" = "https://github.com/Json-To-String/JPAstro"
+"Homepage" = "https://github.com/Json-To-String/JPAstro"
