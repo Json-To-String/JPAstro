@@ -52,6 +52,7 @@ JPAstro/ (New name may be needed. Below are the most important files in each dir
 1. Install uv
 2. `uv sync`
 3. `uv pip install SciScript-Python/py3`
+   1. Follow the steps to authenticate SciServer (you'll have to change the relevant files)
 
 ## Method 2 Tensorflow on GPU via conda (being deprecated)
 1. Install anaconda 
