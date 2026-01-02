@@ -1,6 +1,4 @@
 # Current working summary of project:
-(Writeup/Masters Project Report will be included in the repo soon)
-(Presentation will be added as well)
 
 * Take 5437 objects from [Wittmann et al.](https://iopscience.iop.org/article/10.3847/1538-4365/ab4998) 
 * 7 distinct classes from paper - grouped into 2 / binary classification
@@ -52,9 +50,13 @@ JPAstro/ (New name may be needed. Below are the most important files in each dir
 # Installation
 ## Method 1 uv install
 1. Install uv
-## Method 2 Tensorflow on GPU via conda
+2. `uv sync`
+3. `uv pip install SciScript-Python/py3`
+   1. Follow the steps to authenticate SciServer (you'll have to change the relevant files)
+
+## Method 2 Tensorflow on GPU via conda (being deprecated)
 1. Install anaconda 
 2. `conda update -n base -c defaults conda`
-3. `conda env create -f tensorflow_gpu_modified.yaml`
+3. `conda env create -f tf_gpu_astro.yaml`
 4. `conda activate tf_gpu_astro`
 
