@@ -60,7 +60,9 @@ torchvision rotations. Deliver a pure filter/report function first; #13 consumes
 its per-record scores, decisions and exclusions before freezing splits. Preserve
 raw images. Document historical HSV thresholds, square-image denominator and
 50-percent equality ambiguity; test actual height*width, channel ordering and
-boundaries. Thresholds and rejection versus pixel repair remain scientific choices.
+boundaries. Agreed: reject whole contaminated images from the eligible dataset,
+retain original files and exclusion records, and do not repair or mask pixels.
+The red-percentage threshold and equality boundary remain open.
 Then deliver the split-aware Dataset/rotation integration. Consume frozen manifests; produce RGB CHW tensors and integer class labels. Training-only stochastic augmentation; deterministic validation/test transforms. Derived samples retain identity groups; no pre-split augmentation or held-out fitted statistics. Record transforms and seed worker/sampler behavior. Explain differences from historical rotation policy.
 
 Dependencies: Shared manifest/report schema; fixed filter policy. Rotation integration requires C splits and agreed augmentation settings; the pure filter can land first.
@@ -73,6 +75,8 @@ the integration owner. Preserve provenance and human-readable outputs.
 
 GitHub: [#15](https://github.com/Json-To-String/JPAstro/issues/15). Native subissue of #8.
 
+Agreed loss: cross-entropy. For the proposed two-logit classifier use
+`torch.nn.CrossEntropyLoss` on raw logits and integer class targets.
 Own model/training modules, a validated model/hyperparameter config file and
 TensorBoard integration. Config includes optimizer parameters, epoch limit,
 batch size, initialization, seeds, best-checkpoint metric/direction and optional
@@ -93,7 +97,7 @@ the integration owner. Preserve provenance and human-readable outputs.
 GitHub: [#16](https://github.com/Json-To-String/JPAstro/issues/16). Native subissue of #8.
 
 Own standalone evaluation and reports. Reload a checkpoint in a fresh CPU process without retraining, notebook state or pretrained-weight download. Verify dataset/policy compatibility and refuse forbidden training/validation overlaps with evaluation cohorts. Save record/group IDs, truth and class probabilities plus JSON metrics and a Markdown report/figures. Generate training/validation loss-versus-epoch plots from saved history; include
-final test classification loss, class counts/names, confusion matrix, accuracy,
+final test cross-entropy loss, class counts/names, confusion matrix, accuracy,
 per-class precision/recall/F1 and ROC curve/AUC from positive-class probabilities.
 Do not use per-epoch test results. Optional squared probability error is binary
 Brier score, not MSE on hard classes. Keep PR reporting and define one-class

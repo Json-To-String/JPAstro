@@ -84,8 +84,9 @@ reference behavior and known ambiguities, not approved new defaults.
 Define red fraction using height * width; explicitly test HSV channel ordering,
 threshold boundaries, invalid images and rectangular images. Report original
 record ID, red fraction, filter policy/configuration, keep/reject and reason.
-Preserve raw pixels. Whole-image rejection is the initial proposal; destructive
-pixel repair/masking needs a separate scientific decision and distinct outputs.
+Agreed: reject whole contaminated images from the eligible dataset and preserve
+the raw files. Do not repair or mask their pixels. The red-percentage threshold
+and equality boundary still need agreement.
 Any thresholds learned or tuned from data must use training data only. Fixed
 rules may run before splitting, but defining them using held-out model outcomes
 would contaminate that holdout. Report resulting class counts and make clear that
@@ -124,7 +125,9 @@ curve/AUC calculated from positive-class probabilities. Do not evaluate the fina
 test set each epoch. Include accuracy and per-class precision/recall/F1 with
 support counts for interpretation; precision-recall reporting remains useful.
 
-Proposed classification loss is cross-entropy. Plain MSE on thresholded binary
+Agreed: use cross-entropy for training and reported classification loss.
+For the proposed two-logit model, use `torch.nn.CrossEntropyLoss` with raw logits
+and integer class labels; convert logits to probabilities for ROC AUC reporting. Plain MSE on thresholded binary
 class predictions is just the misclassification rate and adds little to accuracy.
 If squared probability error is desired, report binary Brier score explicitly as
 mean((p_positive - y)^2), optionally; it does not replace ROC AUC or classification
@@ -308,3 +311,7 @@ document and affected issue contracts before implementation proceeds.
   red-pixel filtering added explicitly; rotations moved after object-group splits;
   config, optimizer, optional early stopping, graceful-quit checkpoints, loss
   curves, confusion matrix and ROC AUC made explicit. Brier proposed as optional.
+
+- 2026-11-05: User confirmed whole-image rejection for red contamination and
+  cross-entropy loss. Preserve rejected raw images and exclusion records; do not
+  repair pixels. Threshold/boundary and other scientific policies remain open.
