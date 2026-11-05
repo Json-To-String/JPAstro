@@ -35,6 +35,120 @@ must run without TensorFlow. Supporting two active training backends is outside
 this proposal. Dataset-wide cleanup overlaps issue #7 and should remain scoped
 to files needed for this workflow.
 
+## Scientific objective and scope of claims
+
+Agreed objective: distinguish Perseus cluster galaxies from background galaxies,
+with the larger goal of identifying dwarf galaxies in the Perseus cluster.
+The immediate supervised target remains binary membership; a positive prediction
+is a candidate for follow-up, not proof of membership or dwarf status. The dwarf
+definition (luminosity, stellar mass, morphology, or an explicit catalog category)
+and an independently supported dwarf evaluation subset remain open decisions.
+A pipeline operating on cataloged cutouts measures classification conditional on
+source detection and selection; it does not measure completeness for finding
+previously undetected dwarfs in survey images.
+
+Preserve label origin and confidence. PCC morphological candidates and
+spectroscopically supported memberships are different evidence tiers. Ambiguous
+morphological categories must not become confirmed background merely because
+of the binary mapping. Stars are foreground contaminants, not background
+galaxies; decide whether to exclude them upstream or explicitly define a broader
+nonmember class. Record the policy and report contaminant performance separately.
+
+For the dwarf goal, aggregate membership ROC AUC alone is insufficient. #16 must
+report retained/rejected counts by known dwarf status where available, and dwarf
+recall/completeness and contamination at a validation-chosen threshold on an
+independent labeled evaluation cohort. Report recall against the eligible dwarf
+cohort separately from recovery against the original labeled cohort, counting
+pipeline rejections as missed objects for the latter. Define denominators and
+uncertainty at the independent-object/group level. If reliable dwarf labels or
+pre-filter truth are unavailable, report that limitation instead of inventing a
+completeness estimate. Precision among selected members is not dwarf purity.
+
+The historical bright cut (r <= 19.4) may exclude the objects of greatest interest.
+Report the selection function and performance versus apparent magnitude, surface
+brightness and angular size where measured and supported by sample counts. Do
+not infer performance on excluded faint sources. Red rejection also needs an
+audit of selection bias, using training/development examples for policy choices.
+
+Other-cluster testing is an optional external validation experiment, not a
+prerequisite for the initial Perseus pipeline. It can measure transfer under a
+specified domain change, not automatically improve the trained model. Distances,
+angular scales, imaging depth/PSF, rendering and labels must be recorded; define
+membership relative to each cluster rather than reusing Perseus's redshift window.
+Adding another cluster to training is a separate experiment and removes its
+status as an untouched external test. A genuinely held-out sky region or
+independently labeled Perseus sample is a closer first test of the stated goal.
+The exact spatial holdout and independence policy remain open.
+
+The [Wittmann catalog](https://arxiv.org/abs/1911.00951) describes morphological
+low-mass candidates. The [Euclid Perseus dwarf study](https://doi.org/10.1051/0004-6361/202450799)
+provides a possible crossmatch/reference for future evaluation, not approved
+training truth or a guarantee of independent labels. Audit shared objects,
+label provenance and survey differences before using it.
+
+## Device and interchangeable model contracts
+
+Required config: `device = "auto" | "cpu" | "cuda"` (with an optional explicit
+CUDA index). `auto` chooses CUDA when available, otherwise CPU; explicit CUDA
+requests fail clearly when unavailable. Record requested and resolved device,
+GPU model, PyTorch/CUDA versions and deterministic settings. Perform a small
+startup tensor operation to expose incompatible runtime/device combinations.
+Runtime errors and out-of-memory failures must not silently switch devices or
+change the scientific configuration. Keep single-device training in scope;
+multi-GPU/distributed training and mixed precision are future options.
+
+All models, batches and relevant tensors use the resolved device consistently.
+CPU remains fully supported for the smoke workflow and checkpoint evaluation.
+Test auto selection and unavailable-device errors without requiring GPU hardware;
+record a real CUDA short run when hardware is available. GPU availability cannot
+be established by mock tests, and hardware-dependent numerical differences must
+be documented. Pinning/transfers may optimize CUDA later without changing outputs.
+
+Proposed model extension: a small local registry of named factory functions,
+starting with at least two explicitly supported architectures from different
+families, for example ResNet50 and DenseNet121. Specific baseline and second
+architecture await agreement; ResNet18 remains a candidate smaller baseline.
+Use torchvision's model/weights APIs behind explicit adapters rather than
+assuming every model has a `.fc` attribute. Each adapter accepts initialization
+and model options, exposes its deterministic preprocessing requirements, and
+returns a PyTorch module producing `[batch, 2]` raw logits compatible with the
+agreed cross-entropy loss. A custom architecture registers a local factory and
+adapter with the same contract. No dynamic plugin loading framework or arbitrary
+import paths in configuration are needed for this iteration.
+
+Record factory/architecture name and version, implementation identity, weights
+identifier/checksum, input size, normalization and head adaptation. Pretrained
+weights may require different preprocessing; validate train/evaluation transforms
+and checkpoint compatibility instead of silently applying ResNet defaults.
+Configuration uses explicit weight versions, never a moving default for a frozen
+experiment. Reconstruct checkpoint architecture for evaluation without fetching
+initialization weights. Unknown models/options fail before training.
+
+Acceptance: two distinct model families run the same Dataset/training/evaluation
+path with valid output shapes and a checkpoint round trip. A documented custom
+factory example explains registration, output logits, preprocessing and provenance.
+Compare architectures on identical frozen partitions and declared training budgets;
+choose architecture/hyperparameters using validation only. Many model trials on
+the same small validation cohort risk selection overfitting even with an untouched
+test set; record all trials and consider grouped cross-validation within development
+data. Extension capability does not require a large benchmark campaign.
+
+## README acceptance contract
+
+#17 owns a copyable walkthrough in the root README: clean CPU installation and
+CUDA setup/verification, data-source prerequisites, download into a clean folder,
+reuse of existing data, config selection/editing, red-image rejection, frozen
+splits, training rotations, model registration/selection, training and optional
+early stopping, Ctrl-C/resume, fresh-process evaluation, and output interpretation.
+#11 owns installation details; #15 supplies device/model/config examples.
+Explain the scientific target and dwarf/membership distinction in plain language.
+Provide one small CPU example with exact commands and an example config; document
+how to change only model/device settings and how to locate saved metrics and
+rejected-object reports. Validate these commands in #17's integration exercise.
+During design, clearly label unimplemented commands as planned; do not present a
+future CLI as currently runnable. Retain historical TensorFlow instructions only
+in a labeled legacy section once the supported workflow is delivered.
+
 ## Pipeline alignment with the user's workflow
 
 The requested stages map to the existing subissues as follows. Installation and
@@ -99,7 +213,7 @@ historical fixed angle list is the agreed policy.
 
 ### Configuration, stopping and checkpoint lifecycle
 
-A versioned config file must specify model architecture, initialization/weights,
+A versioned config file must specify device selection, registered model architecture, initialization/weights,
 optimizer and its hyperparameters, batch size, epoch limit, seeds, transforms,
 checkpoint selection metric/direction, and early-stopping enablement, monitored
 validation metric, patience and minimum improvement. Keep the resolved config
@@ -315,3 +429,9 @@ document and affected issue contracts before implementation proceeds.
 - 2026-11-05: User confirmed whole-image rejection for red contamination and
   cross-entropy loss. Preserve rejected raw images and exclusion records; do not
   repair pixels. Threshold/boundary and other scientific policies remain open.
+
+- 2026-11-05: User requires CUDA when available, interchangeable models and a
+  README walkthrough. Science target clarified as Perseus membership classification
+  supporting dwarf candidate identification; other-cluster validation is optional
+  and its benefit remains a hypothesis. Added device/factory contracts, dwarf
+  selection/completeness caveats, and README acceptance requirements.
