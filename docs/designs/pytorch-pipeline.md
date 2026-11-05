@@ -35,6 +35,105 @@ must run without TensorFlow. Supporting two active training backends is outside
 this proposal. Dataset-wide cleanup overlaps issue #7 and should remain scoped
 to files needed for this workflow.
 
+## Pipeline alignment with the user's workflow
+
+The requested stages map to the existing subissues as follows. Installation and
+integration remain supporting work; they do not add scientific stages.
+
+| User stage | Subissue | Contract |
+| --- | --- | --- |
+| 1. SDSS download | #12 | One straightforward acquisition into a clean raw-image folder, with a manifest and basic failure checks |
+| 2a. Red-pixel cleaning/filter | #14 implements; #13 records selections | Deterministic quality filtering before the split; preserve raw images and report red fraction, decision and exclusions |
+| 3. Train/validation/test split | #13 | Split independent original-object groups once, persist membership and seed, audit leakage |
+| 2b. Rotations | #14 | Apply configurable rotations to training samples after splitting; evaluation preprocessing stays fixed |
+| 4. Choose model/hyperparameters | #15 | Explicit validated config file, including model/initialization, optimizer and early-stopping settings |
+| 5. Train/fit | #15 | Configured optimizer, optional validation-only early stopping, best weights and resumable checkpoint on graceful quit |
+| 6. Evaluation/metrics | #16 | Training/validation loss versus epoch, confusion matrix and probability-based ROC AUC; optional Brier score |
+| Supporting install and integration | #11, #17 | Clean installation and an independently runnable, tested workflow |
+
+Execution order is download -> fixed quality filter -> identity/group split ->
+training rotations -> configured training -> evaluation. Rotations appear after
+splitting because splitting generated images would allow views of the same object
+into different partitions. Configuring a rotation policy beforehand is harmless;
+applying it beforehand is unnecessary and increases the risk of leakage.
+
+### Simple acquisition
+
+Keep #12 small: download requested SDSS cutouts into a designated raw folder,
+validate status and image decoding, write an image/source manifest, and clearly
+report failed objects. A finite timeout and a small retry allowance are enough.
+Reruns may skip verified expected files; a download manager, concurrency,
+background services and sophisticated recovery are outside scope. Raw-image
+checksums and source metadata support scientific reproducibility without adding
+an acquisition framework. The supported pipeline must consume this folder on
+subsequent runs without making acquisition mandatory.
+
+### Red-pixel filtering and rotations
+
+Red-pixel filtering is data-quality selection, distinct from creating rotated
+training examples. #14 owns both image operations; #13 consumes the filter report
+before freezing splits. This avoids a dependency cycle: the deterministic filter
+can be delivered/tested before the rotation Dataset integration.
+
+The historical implementation in `src/perseusResNet50.py` uses OpenCV HSV masks
+`[0,80,20]..[10,255,255]` and `[160,100,20]..[179,255,255]`, and retains images
+with red percentage <= 50. It also flags percentage >= 50 as red, so the equality
+boundary is inconsistent. The denominator assumes square images. These are
+reference behavior and known ambiguities, not approved new defaults.
+
+Define red fraction using height * width; explicitly test HSV channel ordering,
+threshold boundaries, invalid images and rectangular images. Report original
+record ID, red fraction, filter policy/configuration, keep/reject and reason.
+Preserve raw pixels. Whole-image rejection is the initial proposal; destructive
+pixel repair/masking needs a separate scientific decision and distinct outputs.
+Any thresholds learned or tuned from data must use training data only. Fixed
+rules may run before splitting, but defining them using held-out model outcomes
+would contaminate that holdout. Report resulting class counts and make clear that
+metrics describe the retained image-quality population.
+
+Rotations must be configurable, training-only and reproducible from recorded
+settings. The exact angle distribution, interpolation, padding and optional
+flips remain discussion items; do not assume the notebook's +/-10 degrees or the
+historical fixed angle list is the agreed policy.
+
+### Configuration, stopping and checkpoint lifecycle
+
+A versioned config file must specify model architecture, initialization/weights,
+optimizer and its hyperparameters, batch size, epoch limit, seeds, transforms,
+checkpoint selection metric/direction, and early-stopping enablement, monitored
+validation metric, patience and minimum improvement. Keep the resolved config
+with each run. Validate values before starting training. A config references the
+frozen split instead of silently generating a different split for each model.
+
+Save best weights whenever the configured validation criterion improves, and a
+resumable last checkpoint at completed epoch boundaries. On Ctrl-C or a supported
+graceful termination, preserve a consistent resumable checkpoint and record the
+interruption. If interrupted mid-epoch, the initial implementation may resume
+from the last completed epoch; document that boundary and never claim exact
+mid-batch replay. Preserve the last checkpoint on normal completion and early
+stopping too; do not overwrite best weights with worse interrupted weights.
+Forced termination such as SIGKILL or power loss cannot guarantee a final write.
+Checkpoint writes must not corrupt the previous usable file. Include optimizer,
+scheduler if used, RNG, completed epoch and early-stopping/selection state.
+
+### Metrics contract
+
+Required: saved and plotted sample-weighted training/validation loss per epoch,
+final test loss, confusion matrix (raw counts with class names), and binary ROC
+curve/AUC calculated from positive-class probabilities. Do not evaluate the final
+test set each epoch. Include accuracy and per-class precision/recall/F1 with
+support counts for interpretation; precision-recall reporting remains useful.
+
+Proposed classification loss is cross-entropy. Plain MSE on thresholded binary
+class predictions is just the misclassification rate and adds little to accuracy.
+If squared probability error is desired, report binary Brier score explicitly as
+mean((p_positive - y)^2), optionally; it does not replace ROC AUC or classification
+loss. See the [scikit-learn metric definitions](https://scikit-learn.org/stable/modules/model_evaluation.html).
+Training-curve generation consumes persisted history, so it works in a fresh
+process. Every metric must be reproducible from saved predictions/history and
+state its partition, label mapping, probability column and threshold. Use only
+validation data for threshold selection and early stopping.
+
 ## Scientific contract: required safeguards
 
 1. Preserve input catalogs and image bytes with checksums and provenance. Record
@@ -88,6 +187,7 @@ The following command names and module paths are proposed contracts, not existin
 | --- | --- | --- | --- |
 | Prepare | `prepare.py` | Original catalogs, label/cut/group policy | Manifest, exclusions, identity evidence, cohort counts |
 | Download | `download.py` | Selected manifest, acquisition config | Validated images, acquisition records, image checksums |
+| Quality filter | `data.py` (pure image-quality function) | Raw images, fixed red-pixel policy | Per-record quality/exclusion report; raw images retained |
 | Split/validate | `splits.py` | Identity evidence, validated images, frozen split policy | Frozen membership, leakage audit, dataset fingerprint |
 | Load/augment | `data.py` | Frozen manifest, transform config | Tensor/label batches; transform specification |
 | Train | `train.py`, `model.py` | Training/validation membership, model/run config | Best and resumable checkpoints, history, TensorBoard logs |
@@ -166,11 +266,11 @@ contracts and scientific policies are agreed. Every child PR targets
 | Shard | Scope / suggested ownership | Depends on | Acceptance evidence |
 | --- | --- | --- | --- |
 | [#11](https://github.com/Json-To-String/JPAstro/issues/11) A Installation | `pyproject.toml`, dependency lock, installation docs | Agreed package layout | Clean CPU install; documented GPU setup; no TensorFlow; complete direct dependencies |
-| [#12](https://github.com/Json-To-String/JPAstro/issues/12) B Acquisition | `download.py`, acquisition fixtures | Manifest contract; A for live run | Empty-directory download; validated responses; retries/timeouts; atomic writes; resume by expected files/checksums; paths independent of cwd |
+| [#12](https://github.com/Json-To-String/JPAstro/issues/12) B Acquisition | `download.py`, acquisition fixtures | Manifest contract; A for live run | Empty-directory download; Clean raw folder/manifest; basic response/decode checks, timeout and bounded retries; optional verified-file skipping; paths independent of cwd |
 | [#13](https://github.com/Json-To-String/JPAstro/issues/13) C Scientific data preparation and isolation | `prepare.py`, `splits.py`, policies, manifest audit | Scientific decisions | Explicit exclusions/counts; catalog aliases, duplicates, overlapping cutouts, conflicting labels, transitive matches and external overlap tested; deterministic persisted splits |
-| [#14](https://github.com/Json-To-String/JPAstro/issues/14) D PyTorch datasets and augmentation | `data.py`, transforms | [#13](https://github.com/Json-To-String/JPAstro/issues/13) C contracts | RGB CHW tensors and integer labels; training-only randomness; deterministic evaluation; no held-out statistics |
-| [#15](https://github.com/Json-To-String/JPAstro/issues/15) E Training and checkpoints | `model.py`, `train.py`, TensorBoard | A, C, D | Short CPU run; weighted loss aggregation; best/last checkpoint; config/provenance; reproducible initialization; resumable state |
-| [#16](https://github.com/Json-To-String/JPAstro/issues/16) F Independent evaluation | `evaluate.py`, reporting | C/E contracts; E checkpoint | Fresh-process CPU reload; overlap refusal; per-record probabilities; class metrics/ROC/PR/confusion; defined behavior for one-class cohorts; human-readable report |
+| [#14](https://github.com/Json-To-String/JPAstro/issues/14) D PyTorch datasets and augmentation | `data.py`, transforms | [#13](https://github.com/Json-To-String/JPAstro/issues/13) C contracts | Red-pixel filter/report before split; RGB CHW tensors/labels; configurable training rotations after split; deterministic evaluation |
+| [#15](https://github.com/Json-To-String/JPAstro/issues/15) E Training and checkpoints | `model.py`, `train.py`, TensorBoard | A, C, D | Config-driven model/optimizer; optional validation early stopping; best/last/graceful-quit checkpoint; weighted epoch history and provenance |
+| [#16](https://github.com/Json-To-String/JPAstro/issues/16) F Independent evaluation | `evaluate.py`, reporting | C/E contracts; E checkpoint | Fresh-process CPU reload; overlap refusal; train/validation loss curves, confusion and probability-based ROC AUC; optional Brier; auditable report |
 | [#17](https://github.com/Json-To-String/JPAstro/issues/17) G Integration and scientific acceptance | CLI, notebook wrapper, CI, workflow docs | A–F | Offline synthetic smoke chain and negative leakage cases; separate recorded live acquisition and real-data audit/run |
 
 Agent handoff must include this document revision, issue number, allowed file
@@ -203,3 +303,8 @@ document and affected issue contracts before implementation proceeds.
   discussion, no data leakage, and reproducible, human-readable science.
 - 2026-11-05: Initial proposal written; scientific policy questions remain open.
   No implementation agents have been dispatched.
+
+- 2026-11-05: User supplied the six-stage mental map. Acquisition simplified;
+  red-pixel filtering added explicitly; rotations moved after object-group splits;
+  config, optimizer, optional early stopping, graceful-quit checkpoints, loss
+  curves, confusion matrix and ROC AUC made explicit. Brier proposed as optional.
