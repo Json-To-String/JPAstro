@@ -1,4 +1,28 @@
-# Current working summary of project:
+# JPAstro
+
+JPAstro aims to classify likely Perseus cluster members versus background
+galaxies and produce a sifted candidate catalog for astronomers. Astronomers can
+then select objects for further study, including dwarf galaxy candidates.
+Automated dwarf identification is outside the current pipeline scope.
+
+The PyTorch migration is in progress in [PR #10](https://github.com/Json-To-String/JPAstro/pull/10).
+See the [pipeline design](docs/designs/pytorch-pipeline.md) and
+[subissue contracts](docs/designs/pytorch-pipeline-issues.md) for the current plan.
+The intended workflow is SDSS download -> fixed red-image rejection -> independent
+train/validation/test splits -> training rotations -> config-driven training ->
+evaluation. CUDA auto-selection with CPU support, configurable brightness selection and a
+single ResNet18 baseline are requirements being designed, not completed features.
+Additional architectures are deferred.
+
+The finished README walkthrough will cover installation, CPU/CUDA verification,
+clean-folder download and reuse, configuration (including disabling the brightness cut), ResNet18 initialization,
+training/early stopping, checkpoint resume, evaluation and bulk membership scoring. No new CLI
+commands are runnable until the implementation and integration checks land.
+
+The notes and installation instructions below describe the historical project;
+they are not yet a verified end-to-end PyTorch walkthrough.
+
+# Historical project summary:
 
 * Take 5437 objects from [Wittmann et al.](https://iopscience.iop.org/article/10.3847/1538-4365/ab4998) 
 * 7 distinct classes from paper - grouped into 2 / binary classification
