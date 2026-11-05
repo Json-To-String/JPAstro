@@ -37,15 +37,12 @@ to files needed for this workflow.
 
 ## Scientific objective and scope of claims
 
-Agreed objective: distinguish Perseus cluster galaxies from background galaxies,
-with the larger goal of identifying dwarf galaxies in the Perseus cluster.
-The immediate supervised target remains binary membership; a positive prediction
-is a candidate for follow-up, not proof of membership or dwarf status. The dwarf
-definition (luminosity, stellar mass, morphology, or an explicit catalog category)
-and an independently supported dwarf evaluation subset remain open decisions.
-A pipeline operating on cataloged cutouts measures classification conditional on
-source detection and selection; it does not measure completeness for finding
-previously undetected dwarfs in survey images.
+Agreed primary objective: classify likely Perseus cluster membership versus
+background galaxies at scale, producing an inspectable candidate catalog for
+astronomers. Dwarf galaxy identification motivates downstream science but is not
+a training target, required label, metric gate or automatic pipeline decision.
+Astronomers select dwarf candidates from the sifted catalog after classification.
+A high membership score is a prediction for follow-up, not confirmed membership.
 
 Preserve label origin and confidence. PCC morphological candidates and
 spectroscopically supported memberships are different evidence tiers. Ambiguous
@@ -54,21 +51,34 @@ of the binary mapping. Stars are foreground contaminants, not background
 galaxies; decide whether to exclude them upstream or explicitly define a broader
 nonmember class. Record the policy and report contaminant performance separately.
 
-For the dwarf goal, aggregate membership ROC AUC alone is insufficient. #16 must
-report retained/rejected counts by known dwarf status where available, and dwarf
-recall/completeness and contamination at a validation-chosen threshold on an
-independent labeled evaluation cohort. Report recall against the eligible dwarf
-cohort separately from recovery against the original labeled cohort, counting
-pipeline rejections as missed objects for the latter. Define denominators and
-uncertainty at the independent-object/group level. If reliable dwarf labels or
-pre-filter truth are unavailable, report that limitation instead of inventing a
-completeness estimate. Precision among selected members is not dwarf purity.
+Required scientific reporting concerns membership precision/recall, contamination,
+ROC AUC and cross-entropy on independently labeled objects, with clear population
+and selection denominators. Dwarf-specific definitions/evaluation are deferred.
+Where measured, preserve magnitude/size metadata for astronomers and optional
+stratified membership reporting; no dwarf labels are required to complete #8.
+The classifier works on supplied cataloged cutouts, not source detection in full
+survey images. Candidate-ranking and rejection reports must preserve record IDs
+and coordinates so astronomers can inspect or crossmatch objects independently.
 
-The historical bright cut (r <= 19.4) may exclude the objects of greatest interest.
-Report the selection function and performance versus apparent magnitude, surface
-brightness and angular size where measured and supported by sample counts. Do
-not infer performance on excluded faint sources. Red rejection also needs an
-audit of selection bias, using training/development examples for policy choices.
+### Configurable brightness selection
+
+Required: a brightness section in the versioned config with `enabled`, `band`,
+`magnitude_column`, `max_magnitude` and an explicit missing-value policy. A
+historical reproduction example may set r-band maximum magnitude to 19.4 with
+inclusive <= comparison; this is a recorded experiment setting, not a universal
+hardcoded limit. The configuration must support disabling the cut. Record the
+photometric convention/extinction correction and distinguish brightness selection
+from the red-pixel image-quality filter. Larger magnitude means fainter.
+
+Apply the fixed configured cut before freezing the eligible dataset and split.
+Record every exclusion and class count, and keep raw data unchanged. A changed
+cut produces a new dataset version and requires a fresh split/leakage audit;
+never silently refilter a frozen experiment. Missing magnitudes must follow the
+explicit error/exclude/keep policy with a report. Choose/tune the cut using
+training/development data, not final-test performance. Training selection and
+bulk-inference selection must be recorded separately: scoring a fainter population
+is allowed when explicitly requested, but its performance is not established by
+a bright-only test set. Avoid representing excluded objects as predicted background.
 
 Other-cluster testing is an optional external validation experiment, not a
 prerequisite for the initial Perseus pipeline. It can measure transfer under a
@@ -104,46 +114,42 @@ record a real CUDA short run when hardware is available. GPU availability cannot
 be established by mock tests, and hardware-dependent numerical differences must
 be documented. Pinning/transfers may optimize CUDA later without changing outputs.
 
-Proposed model extension: a small local registry of named factory functions,
-starting with at least two explicitly supported architectures from different
-families, for example ResNet50 and DenseNet121. Specific baseline and second
-architecture await agreement; ResNet18 remains a candidate smaller baseline.
-Use torchvision's model/weights APIs behind explicit adapters rather than
-assuming every model has a `.fc` attribute. Each adapter accepts initialization
-and model options, exposes its deterministic preprocessing requirements, and
-returns a PyTorch module producing `[batch, 2]` raw logits compatible with the
-agreed cross-entropy loss. A custom architecture registers a local factory and
-adapter with the same contract. No dynamic plugin loading framework or arbitrary
-import paths in configuration are needed for this iteration.
+Agreed delivery scope: one baseline model, with additional architectures and
+plugin/registry machinery deferred. Select torchvision ResNet18 initialized with
+explicit `ResNet18_Weights.IMAGENET1K_V1` for the initial research configuration;
+replace the final layer with two raw logits for cross-entropy. Permit weights=None
+for offline fixtures and explicitly recorded scratch-training runs. This baseline
+already exists in the notebook and is smaller than historical ResNet50, reducing
+migration changes. Torchvision lists about 11.7M parameters and 1.81 GFLOPs for
+ResNet18 versus 25.6M and 4.09 GFLOPs for ResNet50; these are reference image-model
+figures, not measured astronomy accuracy or end-to-end throughput.
+See [torchvision's model definitions](https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.py).
 
-Record factory/architecture name and version, implementation identity, weights
-identifier/checksum, input size, normalization and head adaptation. Pretrained
-weights may require different preprocessing; validate train/evaluation transforms
-and checkpoint compatibility instead of silently applying ResNet defaults.
-Configuration uses explicit weight versions, never a moving default for a frozen
-experiment. Reconstruct checkpoint architecture for evaluation without fetching
-initialization weights. Unknown models/options fail before training.
+Keep construction behind one `build_model(config)` function, record architecture,
+explicit weight version/checksum, input size and normalization, and reject
+unsupported names. Do not implement a registry or require a second model to close
+#8. Maintain the two-logit output and checkpoint contracts so a later architecture
+can be added without rewriting training/evaluation. Evaluation/inference recreates
+the recorded architecture with no initialization-weight download.
 
-Acceptance: two distinct model families run the same Dataset/training/evaluation
-path with valid output shapes and a checkpoint round trip. A documented custom
-factory example explains registration, output logits, preprocessing and provenance.
-Compare architectures on identical frozen partitions and declared training budgets;
-choose architecture/hyperparameters using validation only. Many model trials on
-the same small validation cohort risk selection overfitting even with an untouched
-test set; record all trials and consider grouped cross-validation within development
-data. Extension capability does not require a large benchmark campaign.
+Acceptance: a short CPU training/checkpoint/evaluation round trip for ResNet18,
+and a real CUDA short run when hardware is available. Record training time,
+inference throughput, batch size and device on representative data before making
+speed claims. ResNet18's membership performance remains to be validated. A
+MobileNet-family model is a future alternative if measured bulk-scoring cost is
+the limiting factor, not an extra implementation requirement now.
 
 ## README acceptance contract
 
 #17 owns a copyable walkthrough in the root README: clean CPU installation and
 CUDA setup/verification, data-source prerequisites, download into a clean folder,
 reuse of existing data, config selection/editing, red-image rejection, frozen
-splits, training rotations, model registration/selection, training and optional
+splits, training rotations, the supported model/initialization, training and optional
 early stopping, Ctrl-C/resume, fresh-process evaluation, and output interpretation.
 #11 owns installation details; #15 supplies device/model/config examples.
 Explain the scientific target and dwarf/membership distinction in plain language.
 Provide one small CPU example with exact commands and an example config; document
-how to change only model/device settings and how to locate saved metrics and
+how to configure brightness, initialization and device settings and how to locate saved metrics and
 rejected-object reports. Validate these commands in #17's integration exercise.
 During design, clearly label unimplemented commands as planned; do not present a
 future CLI as currently runnable. Retain historical TensorFlow instructions only
@@ -213,7 +219,7 @@ historical fixed angle list is the agreed policy.
 
 ### Configuration, stopping and checkpoint lifecycle
 
-A versioned config file must specify device selection, registered model architecture, initialization/weights,
+A versioned config file must specify device selection, supported model architecture, initialization/weights,
 optimizer and its hyperparameters, batch size, epoch limit, seeds, transforms,
 checkpoint selection metric/direction, and early-stopping enablement, monitored
 validation metric, patience and minimum improvement. Keep the resolved config
@@ -309,6 +315,7 @@ The following command names and module paths are proposed contracts, not existin
 | Load/augment | `data.py` | Frozen manifest, transform config | Tensor/label batches; transform specification |
 | Train | `train.py`, `model.py` | Training/validation membership, model/run config | Best and resumable checkpoints, history, TensorBoard logs |
 | Evaluate | `evaluate.py` | Checkpoint, explicit evaluation membership | Predictions, metrics, figures, human report |
+| Score | shared inference functions / thin CLI | Checkpoint, potentially unlabeled catalog/cutouts | Membership probabilities, ranked candidate catalog, rejection report |
 
 Download can run before final splitting so image-content duplicates and failed
 acquisitions are resolved before a dataset is frozen. Preparation must preserve
@@ -316,7 +323,7 @@ the full original selection trail. Redownloading or changing exclusions after
 freezing creates a new dataset version and requires a fresh audit.
 
 Proposed commands: `python -m jpastro prepare`, `download`, `split`, `train`, and
-`evaluate`. Each accepts explicit paths/configuration and has actionable failures.
+`evaluate`, and `score`. Each accepts explicit paths/configuration and has actionable failures.
 Importing a module must not query a service, read a catalog, or start training.
 
 ### Manifest and run contracts
@@ -354,6 +361,19 @@ of a GPU-trained checkpoint must work. Predictions retain record/group IDs,
 truth, predicted class, and positive-class probability so metrics can be audited.
 Losses must aggregate by sample count, including the final partial batch.
 
+### Bulk membership scoring
+
+#16 must expose the same checkpoint/preprocessing inference path for unlabeled
+catalogs, independently of evaluation metrics. A `score` command processes bounded
+batches without loading all images into memory, preserves identifiers/coordinates,
+and writes positive membership probability, thresholded prediction, checkpoint
+identity and per-object eligibility/failure status. Missing labels prevent metric
+calculation, not scoring. Rejected/failed inputs remain visible in a separate
+report and must not be silently classified as background. Thresholds are explicit
+and chosen using validation data; ranking by probability lets astronomers adjust
+follow-up priorities without re-running inference. Explain that scores require
+calibration checks before being interpreted as calibrated membership probabilities.
+
 ## Choices to discuss before implementation
 
 | Question | Proposed direction | Strength | Weakness / decision needed |
@@ -361,7 +381,7 @@ Losses must aggregate by sample count, including the final partial batch.
 | Observational unit | Galaxy identity plus an explicit cutout-overlap rule | Handles aliases and repeated observations | Matching radius, angular footprint, neighboring galaxies and transitive groups need scientific agreement |
 | Generalization claim | Explicitly define whether evaluation means new objects in Perseus or new sky regions | Makes the split answer the research question | Random grouped splits do not establish spatial/domain generalization; spatial blocks may reduce sample size and class balance |
 | Labels | Versioned PCC mapping and spectroscopic policy with conflict reporting | Makes target construction inspectable | Merging systems, stars, uncertain members, redshift quality and boundary inclusivity need decisions |
-| Model | One explicit baseline, with architecture/initialization in config | Limits uncontrolled changes | Pretrained ResNet18 is a different experiment from the historical ResNet50; comparison must acknowledge that |
+| Model | ResNet18 baseline, explicit initialization in config; extra models deferred | Limits uncontrolled changes | Pretrained ResNet18 is a different experiment from the historical ResNet50; comparison must acknowledge that |
 | Augmentation | Training-only online torchvision transforms | Avoids storing many correlated derivatives | Small rotations differ from the original angle set; physical invariances, interpolation and blank corners need review |
 | Balancing | Preserve natural evaluation prevalence; training-only policy | Makes evaluation representative of its defined cohort | Overall accuracy can hide class failures; class weighting versus sampling requires a decision |
 | Reproducibility | Frozen data/splits plus recorded deterministic settings | Audit and rerun do not depend on current service responses | Archival location and storage costs need agreement; cross-device numerical equivalence has limits |
@@ -435,3 +455,9 @@ document and affected issue contracts before implementation proceeds.
   supporting dwarf candidate identification; other-cluster validation is optional
   and its benefit remains a hypothesis. Added device/factory contracts, dwarf
   selection/completeness caveats, and README acceptance requirements.
+
+- 2026-11-05: User prioritizes membership classification and astronomer-led
+  downstream selection; dwarf definitions/metrics no longer gate delivery.
+  Brightness selection is configurable and can be disabled. Extra architectures
+  deferred; ResNet18 selected as a modest-cost existing baseline. Added bounded
+  unlabeled catalog scoring to make the data-sifting objective concrete.
